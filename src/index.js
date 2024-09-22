@@ -121,6 +121,8 @@ function setupKeyboardControls(
               box.position.set(0, 0);
               box.anchor.set(0.5);
               characterSprite.addChild(box);
+              //toast
+              toast("Box picked up");
             }
           });
         } else {
@@ -130,6 +132,8 @@ function setupKeyboardControls(
           carriedBox.anchor.set(0);
           container.addChild(carriedBox);
           carriedBox = null;
+          //toast
+          toast("Box dropped");
         }
         updateBoxStatus(smallBoxes);
         break;
@@ -184,6 +188,11 @@ function updateBoxStatus(smallBoxes) {
       done++;
     }
   });
+
+  //Update the text inside boxes
+  globalItem.grayBoxTodo.children[0].text = `Todo: ${todo}`;
+  globalItem.grayBoxInProgress.children[0].text = `In Progress: ${inProgress}`;
+  globalItem.grayBoxDone.children[0].text = `Done: ${done}`;
 
   const newStatus = `Status>> Todo: ${todo} | In Progress: ${inProgress} | Done: ${done}`;
   if (globalItem.statusBar.children[0].text !== newStatus) {
@@ -274,7 +283,6 @@ async function main() {
 
   const characterSprite = createCharacterSprite(character);
   characterSprite.position.set(app.screen.width / 2, app.screen.height / 2);
-  container.addChild(characterSprite);
 
   const smallBoxes = [
     createSmallBoxSprite(
@@ -326,6 +334,8 @@ async function main() {
     tilingSprite,
     app
   );
+  // Add character sprite last to make sure it's on top of everything
+  container.addChild(characterSprite);
   toast("Use arrow keys to move the character and 'H' to pick up/drop boxes");
 }
 //Tooast function that pops up a message on top of the screen for a few seconds and then disappears
