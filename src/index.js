@@ -89,6 +89,11 @@ function handleCarry(characterSprite, smallBoxes, container) {
     if (!isCarrying.value) {
       smallBoxes.forEach((box) => {
         if (checkCollision(characterSprite, box)) {
+          if (carriedBox) {
+            //toast
+            toast("Cannot carry more than one box");
+            return;
+          }
           isCarrying.value = true;
           carriedBox = box;
           box.anchor.set(0.5);
