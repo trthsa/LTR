@@ -77,6 +77,66 @@ function createSmallBoxSprite(smallBoxTexture, x, y) {
   return smallBoxSprite;
 }
 
+function handleCarry(characterSprite, smallBoxes, container) {
+  let isCarrying = {
+    value: false,
+  };
+  let carriedBox = null;
+  globalItem.isCarrying = isCarrying;
+  globalItem.carriedBox = carriedBox;
+
+  return function () {
+    if (!isCarrying.value) {
+      smallBoxes.forEach((box) => {
+        if (checkCollision(characterSprite, box)) {
+          isCarrying.value = true;
+          carriedBox = box;
+          box.anchor.set(0.5);
+          box.position.set(
+            characterSprite.width / 2,
+            -characterSprite.height / 2
+          );
+          //resizes the box to to bigger size to make it look like the character is carrying it
+          box.width = box.height = 500;
+
+          characterSprite.addChild(box);
+          //toast
+          toast("Box picked up");
+        }
+      });
+    } else {
+      isCarrying.value = false;
+      characterSprite.removeChild(carriedBox);
+      if (characterSprite.scale.x > 0) {
+        // Character facing right
+        carriedBox.anchor.set(-1, 0);
+        carriedBox.position.set(
+          characterSprite.x + characterSprite.width / 2,
+          characterSprite.y - characterSprite.height / 2
+        );
+      } else {
+        // Character facing left
+        carriedBox.anchor.set(1, 0);
+        carriedBox.position.set(
+          characterSprite.x - characterSprite.width / 2,
+          characterSprite.y - characterSprite.height / 2
+        );
+      }
+      carriedBox.position.set(
+        characterSprite.x - characterSprite.width / 2,
+        characterSprite.y - characterSprite.height / 2
+      );
+      //resizes the box to to smaller size to make it look like the character has dropped it
+      carriedBox.width = carriedBox.height = 50;
+      container.addChild(carriedBox);
+      carriedBox = null;
+      //toast
+      toast("Box dropped");
+    }
+    updateBoxStatus(smallBoxes);
+  };
+}
+
 function setupKeyboardControls(
   characterSprite,
   _,
@@ -85,12 +145,7 @@ function setupKeyboardControls(
   tilingSprite,
   app
 ) {
-  let isCarrying = {
-    value: false,
-  };
-  let carriedBox = null;
-  globalItem.isCarrying = isCarrying;
-  globalItem.carriedBox = carriedBox;
+  const carryHandler = handleCarry(characterSprite, smallBoxes, container);
 
   window.addEventListener("keydown", (e) => {
     //Update the status bar text
@@ -113,29 +168,7 @@ function setupKeyboardControls(
         break;
       case "h":
       case "H":
-        if (!isCarrying.value) {
-          smallBoxes.forEach((box) => {
-            if (checkCollision(characterSprite, box)) {
-              isCarrying.value = true;
-              carriedBox = box;
-              box.position.set(0, 0);
-              box.anchor.set(0.5);
-              characterSprite.addChild(box);
-              //toast
-              toast("Box picked up");
-            }
-          });
-        } else {
-          isCarrying.value = false;
-          characterSprite.removeChild(carriedBox);
-          carriedBox.position.set(characterSprite.x, characterSprite.y);
-          carriedBox.anchor.set(0);
-          container.addChild(carriedBox);
-          carriedBox = null;
-          //toast
-          toast("Box dropped");
-        }
-        updateBoxStatus(smallBoxes);
+        carryHandler();
         break;
     }
     // Update container position to keep character centered
@@ -165,14 +198,13 @@ function setupKeyboardControls(
       }
     });
 
-    if (isCarrying && carriedBox) {
-      carriedBox.position.set(characterSprite.x, characterSprite.y);
+    if (globalItem?.isCarrying?.value && globalItem?.carriedBox) {
+      globalItem?.carriedBox.position.set(0, -characterSprite.height / 2);
     }
 
     // checkIfInsideGrayBox(smallBoxes, grayBox);
   });
 }
-
 function updateBoxStatus(smallBoxes) {
   //Skip if is carrying a box
   if (globalItem?.isCarrying?.value) return;
