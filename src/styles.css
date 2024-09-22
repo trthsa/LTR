@@ -2,3 +2,39 @@ body {
     margin: 0;
     overflow: hidden;
 }
+
+/* add css for this control for small screen to show to use at bottom center */
+/* <body><div id="control"><button id="up-button" class="control-button">↑</button><button id="down-button" class="control-button">↓</button><button id="left-button" class="control-button">←</button><button id="right-button" class="control-button">→</button><button id="carry-button" class="control-button">H</button></div><script src="src/index.js"></script></body> */
+
+#control {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    width: auto;
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.control-button {
+    font-size: 30px;
+    padding: 15px 30px;
+    margin: 0 10px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.control-button:hover {
+    background-color: #45a049;
+}
+
+.control-button:active {
+    background-color: #3e8e41;
+}
