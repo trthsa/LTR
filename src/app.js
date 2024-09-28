@@ -43,10 +43,45 @@ async function main() {
   container.addChild(grayBoxInProgress);
   container.addChild(grayBoxDone);
   container.addChild(grayBoxTodo);
-
   const characterSprite = createCharacterSprite(character);
   characterSprite.position.set(app.screen.width / 2, app.screen.height / 2);
+  // Create another character Sprite and make it follow behind the character
+  const characterSprite2 = createCharacterSprite(character);
+  characterSprite2.position.set(
+    app.screen.width / 2 + 200,
+    app.screen.height / 2
+  );
+  container.addChild(characterSprite2);
 
+  const followCharacter = () => {
+    const delay = 10; // Adjust delay as needed
+    const speed = 2; // Adjust speed as needed
+
+    const updatePosition = () => {
+      const dx = characterSprite.x - characterSprite2.x;
+      const dy = characterSprite.y - characterSprite2.y;
+
+      if (Math.abs(dx) > delay) {
+        characterSprite2.x += Math.sign(dx) * speed;
+        // Flip characterSprite2 based on the direction of movement
+        if (dx > 0 && characterSprite2.scale.x < 0) {
+          characterSprite2.scale.x *= -1; // Face right
+        } else if (dx < 0 && characterSprite2.scale.x > 0) {
+          characterSprite2.scale.x *= -1; // Face left
+        }
+      }
+
+      if (Math.abs(dy) > delay) {
+        characterSprite2.y += Math.sign(dy) * speed;
+      }
+
+      requestAnimationFrame(updatePosition);
+    };
+
+    updatePosition();
+  };
+
+  followCharacter();
   const smallBoxes = [
     createSmallBoxSprite(
       smallBoxTexture,
